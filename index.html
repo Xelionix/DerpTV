@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
-    <title>P2P Chat</title>
+    <title>Chat</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
             margin: 0;
-            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #8B00FF);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         #chat-container {
@@ -23,6 +25,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            height: 70vh; /* Adjust the height based on your needs */
         }
 
         #header {
@@ -57,6 +60,7 @@
             border-top: 1px solid #ccc;
         }
 
+        #name-input,
         #message-input {
             flex: 1;
             padding: 10px;
@@ -86,36 +90,37 @@
 <body>
     <div id="chat-container">
         <div id="header">
-            <h1>P2P Chat</h1>
+            <h1>LITCHAT👌</h1>
         </div>
+        <input type="text" id="name-input" placeholder="Your Name...">
         <div id="messages"></div>
         <div id="input-container">
             <input type="text" id="message-input" placeholder="Type your message...">
             <button id="send-button" onclick="sendMessage()">Send</button>
         </div>
         <div id="footer">
-            &copy; 2023 Your Name
+            &copy; 2023 Roman T.
         </div>
     </div>
 
-    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
     <script>
-        const socket = io();
-
-        socket.on('message', (data) => {
-            displayMessage(data);
-        });
-
         function sendMessage() {
+            const nameInput = document.getElementById('name-input');
             const messageInput = document.getElementById('message-input');
+            const name = nameInput.value.trim();
             const message = messageInput.value.trim();
 
-            if (message !== '') {
-                const data = { message };
-                socket.emit('message', data);
+            if (message !== '' && name !== '') {
+                const data = { name, message };
                 displayMessage(data, true);
 
-                // Clear the input field
+                // Save message to cookies
+                const allMessages = JSON.parse(getCookie('messages') || '[]');
+                allMessages.push(data);
+                setCookie('messages', JSON.stringify(allMessages));
+
+                // Clear the input fields
+                nameInput.value = '';
                 messageInput.value = '';
             }
         }
@@ -124,12 +129,32 @@
             const messagesContainer = document.getElementById('messages');
             const messageElement = document.createElement('div');
             messageElement.className = `message ${isLocal ? 'local' : 'remote'}`;
-            messageElement.textContent = isLocal ? `You: ${data.message}` : `Remote: ${data.message}`;
+            messageElement.textContent = isLocal ? `${data.name}: ${data.message}` : `Remote: ${data.message}`;
             messagesContainer.appendChild(messageElement);
-
-            // Scroll to the bottom of the messages container
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
+
+        // Function to set a cookie
+        function setCookie(name, value) {
+            document.cookie = `${name}=${value}; path=/`;
+        }
+
+        // Function to get a cookie by name
+        function getCookie(name) {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(`${name}=`)) {
+                    return cookie.substring(name.length + 1);
+                }
+            }
+            return null;
+        }
+
+        // Display existing messages from cookies on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const allMessages = JSON.parse(getCookie('messages') || '[]');
+            allMessages.forEach(message => displayMessage(message, false));
+        });
     </script>
 </body>
 </html>
