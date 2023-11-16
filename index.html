@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+
+        .game-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .test {
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #randomKey {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 20px;
+            background-color: #3498db;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+    <title>Reaction Time Game</title>
+</head>
+<body>
+    <div class="game-container">
+        <div class="test" id="test1">
+            <p>Type the following message as fast as you can:</p>
+            <p id="message">Hello, type this message!</p>
+            <input type="text" id="userInput">
+            <button onclick="startTest(1)">Start Test</button>
+        </div>
+
+        <div class="test" id="test2">
+            <p>Click the button as soon as it moves:</p>
+            <button id="moveButton" onclick="startTest(2)">Click Me!</button>
+        </div>
+
+        <div class="test" id="test3">
+            <p>Click the appearing key as fast as you can:</p>
+            <div id="randomKey" onclick="startTest(3)"></div>
+        </div>
+
+        <div class="result" id="result">
+            <p id="result-text">Your reaction time will be displayed here.</p>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let startTime, endTime;
+
+            function startTest(testNumber) {
+                if (testNumber === 1) {
+                    document.getElementById("message").innerHTML = "Hello, type this message!";
+                    document.getElementById("userInput").value = "";
+                    startTime = new Date().getTime();
+                } else if (testNumber === 2) {
+                    moveButton();
+                    startTime = new Date().getTime();
+                } else if (testNumber === 3) {
+                    showRandomKey();
+                    startTime = new Date().getTime();
+                }
+            }
+
+            function moveButton() {
+                const button = document.getElementById("moveButton");
+                const maxX = window.innerWidth - button.clientWidth;
+                const maxY = window.innerHeight - button.clientHeight;
+
+                const randomX = Math.floor(Math.random() * maxX);
+                const randomY = Math.floor(Math.random() * maxY);
+
+                button.style.position = "absolute";
+                button.style.left = randomX + "px";
+                button.style.top = randomY + "px";
+            }
+
+            function showRandomKey() {
+                const keyElement = document.getElementById("randomKey");
+                const randomKey = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Random uppercase letter
+                keyElement.textContent = randomKey;
+            }
+
+            function endTest(testNumber) {
+                endTime = new Date().getTime();
+                const reactionTime = endTime - startTime;
+
+                displayResult(reactionTime, testNumber);
+            }
+
+            function displayResult(reactionTime, testNumber) {
+                const resultText = `Test ${testNumber}: Your reaction time is ${reactionTime} milliseconds.`;
+                document.getElementById("result-text").textContent = resultText;
+            }
+
+            // Event listeners for different tests
+            document.getElementById("userInput").addEventListener("input", function () {
+                endTest(1);
+            });
+
+            document.getElementById("moveButton").addEventListener("click", function () {
+                endTest(2);
+                moveButton();
+            });
+
+            document.getElementById("randomKey").addEventListener("click", function () {
+                endTest(3);
+                showRandomKey();
+            });
+        });
+    </script>
+</body>
+</html>
