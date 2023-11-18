@@ -3,15 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Video Sharing</title>
+    <title>DerpTV</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        header {
+            background-color: #ff0000;
+            padding: 10px;
+            text-align: center;
+            color: white;
         }
 
         #video-container {
-            margin-top: 20px;
+            margin: 20px;
+            text-align: center;
         }
 
         #video-list {
@@ -19,25 +30,88 @@
             padding: 0;
             display: flex;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
         .video-item {
             margin: 10px;
+            padding: 10px;
             cursor: pointer;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-item:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .thumbnail {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        #videoPlayer {
+            width: 80%;
+            max-width: 800px;
+            display: none;
+            margin-top: 20px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        label {
+            background-color: #4285f4;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: #4285f4;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
         }
     </style>
 </head>
 <body>
 
-<h1>Simple Video Sharing</h1>
-
-<input type="file" id="videoInput" accept="video/*">
-<button onclick="uploadVideo()">Upload Video</button>
+<header>
+    <h1>DerpTV</h1>
+</header>
 
 <div id="video-container">
+    <label for="videoInput">Upload Video</label>
+    <input type="file" id="videoInput" accept="video/*">
+    <button onclick="uploadVideo()">Upload</button>
+
     <ul id="video-list"></ul>
-    <video id="videoPlayer" controls style="display: none;"></video>
+    <video id="videoPlayer" controls></video>
 </div>
+
+<footer>
+    <p>&copy; 2023 DerpTV. All rights reserved.</p>
+</footer>
 
 <script>
     const videoInput = document.getElementById('videoInput');
@@ -49,10 +123,14 @@
 
         if (file) {
             const videoURL = URL.createObjectURL(file);
+            const thumbnailURL = generateThumbnailURL(); // Replace with actual thumbnail generation logic
 
             const videoItem = document.createElement('li');
             videoItem.className = 'video-item';
-            videoItem.textContent = file.name;
+            videoItem.innerHTML = `
+                <img class="thumbnail" src="${thumbnailURL}" alt="Thumbnail">
+                <p>${file.name}</p>
+            `;
             videoItem.addEventListener('click', () => playVideo(videoURL));
 
             videoList.appendChild(videoItem);
@@ -64,6 +142,11 @@
     function playVideo(url) {
         videoPlayer.src = url;
         videoPlayer.style.display = 'block';
+    }
+
+    function generateThumbnailURL() {
+        // Placeholder URL for the thumbnail (replace with actual logic)
+        return 'https://via.placeholder.com/150';
     }
 </script>
 
